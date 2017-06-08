@@ -6,7 +6,7 @@ const priorityTable = {
 	'(': 0,
 }; 
 
-function tail(stack) {
+function top(stack) {
 	return stack[stack.length - 1];
 }
 
@@ -32,17 +32,17 @@ module.exports = function translate(tokens) {
 			continue;
 		}
 		if (current === ')') {
-			let fromStack = null;
-			while ((fromStack = stack.pop()) !== '(') {
-				result.push(fromStack)
+			while (top(stack) !== '(') {
+				result.push(stack.pop());
 			}
+			stack.pop(); // pop left bracket.
 			continue;
 		}
-		while (stack.length && getPriority(tail(stack)) >= getPriority(current)) {
+		while (stack.length && (getPriority(top(stack)) >= getPriority(current))) {
 			result.push(stack.pop());
 		}
 		stack.push(current);
 	}
-	result.push(...stack);
+	result.push(...stack.reverse());
 	return result;
-}
+};
